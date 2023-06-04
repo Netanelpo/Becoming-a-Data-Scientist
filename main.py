@@ -21,10 +21,11 @@ if __name__ == '__main__':
     assert btc.iloc[0].item() == 457.334015, btc.iloc[0].item()
 
     m2_US = m2_US[['time', 'close']]
-    m2_US['time'] = pd.to_datetime(m2_US['time'])
+    m2_US['time'] = pd.to_datetime(m2_US['time']).values.astype(dtype='datetime64[D]')
+    m2_US = m2_US[m2_US['time'] >= btc.index[0]]
     m2_US.set_index('time', inplace=True)
-    assert m2_US.index[0] == pd.Timestamp('1978-06-01 00:00:00+00:00'), m2_US.index[0]
-    assert m2_US.iloc[0].item() == 1318500000000, m2_US.iloc[0].item()
+    assert m2_US.index[0] == pd.Timestamp('2014-10-01'), m2_US.index[0]
+    assert m2_US.iloc[0].item() == 11551400000000, m2_US.iloc[0].item()
 
     fig, axes = plt.subplots(nrows=2, ncols=1, sharex='col')
     btc.plot(ax = axes[0])
