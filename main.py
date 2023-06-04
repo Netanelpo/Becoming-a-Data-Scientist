@@ -26,6 +26,7 @@ if __name__ == '__main__':
     assert m2_US.index[0] == pd.Timestamp('1978-06-01 00:00:00+00:00'), m2_US.index[0]
     assert m2_US.iloc[0].item() == 1318500000000, m2_US.iloc[0].item()
 
-    btc.plot()
-    m2_US.plot()
+    fig, axes = plt.subplots(nrows=2, ncols=1, sharex='col')
+    btc.plot(ax = axes[0])
+    m2_US.plot(ax= axes[1])
     plt.show()
