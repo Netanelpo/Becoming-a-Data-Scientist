@@ -24,11 +24,10 @@ def read(file):
 
 
 def plot_data(i, data, yticks, color):
-    fontsize = 10
+    fontsize = 12
     ax = btc['Global Money Supply'].plot(ax=axes[i], color='b')
-    ax.set_title('Global Money Supply vs. ' + data.name)
     ax.set_yticks([80, 100, 120])
-    ax.set_ylabel('Global Money Supply (trillion USD)', color='b', fontsize=fontsize)
+    ax.set_ylabel('Global Money Supply', color='b', fontsize=fontsize)
     ax.tick_params(which='both', bottom=False)
     ax.set_xlabel('')
     for spine in ax.spines.values():
@@ -36,10 +35,19 @@ def plot_data(i, data, yticks, color):
     ax2 = ax.twinx()
     data.plot(ax=ax2, color=color)
     ax2.set_yticks(yticks)
-    ax2.set_ylabel(data.name + ' price (thousand USD)', color=color, fontsize=fontsize)
+    ax2.set_ylabel(data.name, color=color, fontsize=fontsize)
     ax2.tick_params(which='both', bottom=False)
     for spine in ax2.spines.values():
         spine.set_visible(False)
+
+    from matplotlib.lines import Line2D
+    custom_lines = [Line2D([0], [0], color='b', lw=2),
+                    Line2D([0], [0], color=color, lw=2)]
+
+    ax2.legend(custom_lines, ['Global Money Supply (trillion USD)', data.name + ' price (thousand USD)'])
+
+    (c, pvalue) = sp.pearsonr(data, btc['Global Money Supply'])
+    ax.text(0.05, 0.65, 'Pearson coefficient - ' + str(round(c, 3)), transform=ax.transAxes, fontsize=fontsize)
 
 
 if __name__ == '__main__':
