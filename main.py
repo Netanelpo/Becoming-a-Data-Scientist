@@ -1,7 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats as sp
-import seaborn as seaborn
 
 columns = ['time', 'open', 'high', 'low', 'close', 'Global Money Supply', 'Volume',
            'Volume MA', 'RSI', 'RSI-based MA', 'Upper Bollinger Band',
@@ -22,6 +21,25 @@ def read(file):
     assert df.index[-1] == pd.Period('2023-04'), df.index[-1]
     assert df.index[0] == pd.Period('2014-12'), df.index[0]
     return df
+
+
+def plot_data(i, data, yticks, color):
+    fontsize = 10
+    ax = btc['Global Money Supply'].plot(ax=axes[i], color='b')
+    ax.set_title('Global Money Supply vs. ' + data.name)
+    ax.set_yticks([80, 100, 120])
+    ax.set_ylabel('Global Money Supply (trillion USD)', color='b', fontsize=fontsize)
+    ax.tick_params(which='both', bottom=False)
+    ax.set_xlabel('')
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax2 = ax.twinx()
+    data.plot(ax=ax2, color=color)
+    ax2.set_yticks(yticks)
+    ax2.set_ylabel(data.name + ' price (thousand USD)', color=color, fontsize=fontsize)
+    ax2.tick_params(which='both', bottom=False)
+    for spine in ax2.spines.values():
+        spine.set_visible(False)
 
 
 if __name__ == '__main__':
@@ -46,30 +64,10 @@ if __name__ == '__main__':
     nasdaq['NASDAQ'] = nasdaq['NASDAQ'] / 1000
     nasdaq.drop('Global Money Supply', axis=1, inplace=True)
 
-    plt.rcParams['figure.figsize'] = [12, 8]
-    fig, axes = plt.subplots(nrows=3, ncols=1, sharex='col')
+    plt.rcParams['figure.figsize'] = [8, 8]
+    fig, axes = plt.subplots(nrows=2, ncols=1, sharex='col')
 
-    ax = btc['Global Money Supply'].plot(ax=axes[0], color='b')
-    ax.set_yticks([80, 100, 120])
-    ax.tick_params(which='both', bottom=False)
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+    plot_data(0, btc['BTC'], [0, 20, 40, 60], 'r')
+    plot_data(1, nasdaq['NASDAQ'], [5, 10, 15], 'g')
 
-    ax = btc['BTC'].plot(ax=axes[1], color='r')
-    ax.set_yticks([0, 20, 40, 60])
-    ax.tick_params(which='both', bottom=False)
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-
-    ax = nasdaq['NASDAQ'].plot(ax=axes[2], color='g')
-    ax.set_yticks([5, 10, 15])
-    ax.set_xticks([pd.Period('2015-01') + 12 * y for y in range(9)])
-    ax.set_xlabel('')
-    ax.tick_params(which='both', bottom=False)
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-
-    merged = btc.merge(nasdaq, left_index=True, right_index=True)
-    plt.show()
-    seaborn.pairplot(data=merged)
     plt.show()
